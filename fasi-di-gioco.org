@@ -1,0 +1,20 @@
+* Fasi del gioco
+  1. Invito
+     Quantita di soldi prelevati autenticamente a tutti.
+  2. Apertura al buio
+     Prima di dare le carte il giocatore alla sinistra del mazziere può puntare un buio pari alla dimensione del piatto (buiante), il giocatore dopo puo raddoppiare, quello dopo ancora raddoppia di nuovo. Gli altri non possono poi rilanciare.
+     Se si continua dopo aver dato le carte l utlimo buiante ha diritto a parlare per ultimo, si parte dal giocatore alla sua sinistra.
+  3. Distribuzione
+     Vengono date 5 carte a tutti i giocatori.
+  4. Apertura
+     Il giocatore alla sinistra del mazziere può aprire. L'apertura si puo fare solo se si ha almeno una coppia di Jack. Se non la ha nessuno l'apertura minima alla prossima mano diventa coppia di Queen. Dopo coppia di K e dopo si ricomincia da J.
+     L'apertura è concessa anche se si ha quasi una scala reale, 4 carte dello stesso seme in scala.
+  5. Cambio carte
+     Si possono cambiare massimo 4 carte. Se le carte del mazzo non sono abbastanza si prendono le carte scartate dai giocatori, si mescolano e si pesca da li. Se si cambiano 4 carte gliele si da per ultimo.
+  6. Ultima puntata
+     Inizia l'ultimo ad aver aperto o contro puntato nella fase di Apertura.
+     Puo lasciare, Bussare (non metto niente ma continuo), Puntare, rilanciare, vedere, Parol.
+     Parol solo se tutti fanno parol, non viene assegnato il piatto e si passa alla mano successiva.
+  7. Esibizione carte e assegnamento piatti
+  8. Adeguamento parol
+     

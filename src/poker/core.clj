@@ -56,7 +56,13 @@
     (= values
        (range (apply min values) (+ 1 (apply max values))))))
 
-(defn scala-colore?
+(defn doppia-coppia?
+  [hand]
+  (= 2
+     (count (filter #(= 2 %)
+                    (vals (frequencies (map :value hand)))))))
+
+(defn scala-reale?
   [hand]
   (and (scala? hand)
        (colore? hand)))
