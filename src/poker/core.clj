@@ -78,10 +78,38 @@
   (for [suit '(\C \Q \F \P)
         value (range (card-lowest-value number-players) 15)]
     (card value suit)))
-  
+
+;; {:deck '(list of cards)
+;;  :discarded-cards '(list of cards)
+;;  :pot number
+;;  :players '({:hand '(list of cards)
+;;              :money number})}
+
+(defn update-pot
+  "Update pot by AMOUNT"
+  [game-state amount]
+  (assoc game-state :pot (+ (:pot game-state)
+                            amount)))
+
+(defn update-player-cards
+  "Gives CARDS to PLAYER."
+  [cards player]
+  (assoc player :hand cards))
+
+
+
+(defn update-player-money
+  "Update money value for PLAYER by AMOUNT."
+  [game-state amount player]
+  (assoc player :money (+ (:money player)
+                          amount)))
 
 
 
 
-  
-  
+
+
+
+
+
+
