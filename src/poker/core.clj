@@ -1,3 +1,4 @@
+
 (ns poker.core
   (:gen-class))
 
@@ -72,7 +73,7 @@
   (and (tris? hand)
        (pair? hand)))
 
-(defn deck
+(defn deck-generate
   "Returns an initial unshuffled deck to play with NUMBER-PLAYERS."
   [number-players]
   (for [suit '(\C \Q \F \P)
@@ -88,24 +89,31 @@
 (defn update-pot
   "Update pot by AMOUNT"
   [game-state amount]
-  (assoc game-state :pot (+ (:pot game-state)
-                            amount)))
+  (update game-state :pot #(+ % amount)))
 
 (defn update-player-cards
   "Gives CARDS to PLAYER."
-  [cards player]
-  (assoc player :hand cards))
-
-
+  [game-state player cards]
+  (assoc-in game-state [:players player :hand] cards))
 
 (defn update-player-money
-  "Update money value for PLAYER by AMOUNT."
-  [game-state amount player]
-  (assoc player :money (+ (:money player)
-                          amount)))
+  "Returns new game state where player has added amount to his money"
+  [game-state player amount]
+  (update-in game-state
+             [:players player :money]
+             #(+ % amount)))
 
+(def game-state-example {:deck (shuffle (generate-deck 4))
+                         :pot 0
+                         :players {1 {:hand nil, :money 0}
+                                   2 {:hand nil, :money 100}}})
 
-
+(defn phase-1-blind
+  "Removes blind from all players."
+  [game blind]
+  (reduce #(update-player-money % %2 blind)
+          game
+          (keys (:players game))))
 
 
 
