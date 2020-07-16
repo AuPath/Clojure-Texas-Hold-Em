@@ -1,6 +1,7 @@
 
 (ns poker.core
-  (:gen-class))
+  (:gen-class)
+  (:require clojure.set))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -88,32 +89,58 @@
 
 (defn update-pot
   "Update pot by AMOUNT"
-  [game-state amount]
-  (update game-state :pot #(+ % amount)))
+  [game amount]
+  (update game :pot #(+ % amount)))
 
 (defn update-player-cards
   "Gives CARDS to PLAYER."
-  [game-state player cards]
-  (assoc-in game-state [:players player :hand] cards))
+  [game player cards]
+  (assoc-in game [:players player :hand] cards))
 
 (defn update-player-money
   "Returns new game state where player has added amount to his money"
-  [game-state player amount]
-  (update-in game-state
+  [game player amount]
+  (update-in game
              [:players player :money]
              #(+ % amount)))
 
-(def game-state-example {:deck (shuffle (generate-deck 4))
+(defn draw-n-cards-from-deck
+  ""
+  [game player n]
+  (let [deck (:deck game)
+        cards-drawn (take n deck)
+        new-game (assoc game :deck (clojure.set/difference (set deck)
+                                                           (set cards-drawn)))]
+    (update-player-cards new-game player cards-drawn)))
+
+
+(def game-example {:deck (shuffle (deck-generate 4))
                          :pot 0
                          :players {1 {:hand nil, :money 0}
                                    2 {:hand nil, :money 100}}})
 
-(defn phase-1-blind
+(defn cards-discarded
+  "Returns discarded cards."
+  [game]
+  (vec
+   (clojure.set/difference (set (:deck game))
+                           (set (apply merge (map :hand (vals (:players game))))))))
+
+(defn phase-blind
   "Removes blind from all players."
   [game blind]
-  (reduce #(update-player-money % %2 blind)
+  (reduce #(update-player-money % %2 (- blind))
           game
           (keys (:players game))))
+
+(defn phase-card-distribution
+  "Gives 5 cards to all active players"
+  [game]
+  (let [active-players (:players game)]
+    (reduce #(draw-n-cards-from-deck % %2 5) 
+            game
+            (keys active-players))))
+
 
 
 
