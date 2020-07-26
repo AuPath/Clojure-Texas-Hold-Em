@@ -1,4 +1,3 @@
-
 (ns poker.core
   (:gen-class)
   (:require clojure.set))
@@ -74,6 +73,12 @@
   (and (tris? hand)
        (pair? hand)))
 
+(defn carta-alta?
+  [hand]
+  (not
+   ((some-fn pair? doppia-coppia? tris?
+             poker? scala? scala-reale? full?) hand)))
+
 (defn deck-generate
   "Returns an initial unshuffled deck to play with NUMBER-PLAYERS."
   [number-players]
@@ -94,24 +99,22 @@
 
 (defn update-player-cards
   "Gives CARDS to PLAYER."
-  [game player cards]
-  (assoc-in game [:players player :hand] cards))
+  [player cards]
+  (assoc player :hand cards))
 
 (defn update-player-money
   "Returns new game state where player has added amount to his money"
-  [game player amount]
-  (update-in game
-             [:players player :money]
-             #(+ % amount)))
+  [player amount]
+  (update player :money #(+ % amount)))
 
 (defn draw-n-cards-from-deck
   ""
-  [game player n]
+  [game player-id n]
   (let [deck (:deck game)
         cards-drawn (take n deck)
         new-game (assoc game :deck (clojure.set/difference (set deck)
                                                            (set cards-drawn)))]
-    (update-player-cards new-game player cards-drawn)))
+    (update-player-cards new-game player-id cards-drawn)))
 
 
 (def game-example {:deck (shuffle (deck-generate 4))
@@ -141,10 +144,60 @@
             game
             (keys active-players))))
 
+(defn value-carta-alta
+  ""
+  [hand]
+  (map #(biginteger (Math/pow % %2))
+                 '(9 10 11 12 13)
+                 '(1 2 3 4 5)))
+
+(def esempio-carta-alta (list (card 14 \C)
+                              (card 13 \C)
+                              (card 12 \F)
+                              (card 10 \C)
+                              (card 9 \C)))
+
+(def esempio-coppia (list (card 14 \C)
+                          (card 14 \C)
+                          (card 12 \F)
+                          (card 10 \C)
+                          (card 9 \C)))
+
+(def esempio-tris (list (card 14 \C)
+                        (card 14 \C)
+                        (card 14 \F)
+                        (card 10 \C)
+                        (card 9 \C)))
+
+(def esempio-poker (list (card 14 \C)
+                         (card 14 \C)
+                         (card 14 \F)
+                         (card 14 \C)
+                         (card 9 \C)))
+
+(def esempio-full (list (card 14 \C)
+                        (card 14 \C)
+                        (card 14 \F)
+                        (card 10 \C)
+                        (card 10 \C)))
+
+(def esempio-scala (list (card 14 \C)
+                         (card 13 \C)
+                         (card 12 \F)
+                         (card 11 \C)
+                         (card 10 \C)))
+
+(def esempio-scala-colore (list (card 14 \C)
+                          (card 13 \C)
+                          (card 12 \C)
+                          (card 11 \C)
+                          (card 10 \C)))
+
+(def esempio-colore (list (card 14 \C)
+                          (card 9 \C)
+                          (card 12 \C)
+                          (card 11 \C)
+                          (card 10 \C)))
 
 
-
-
-
-
-
+  

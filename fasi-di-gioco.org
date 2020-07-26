@@ -18,3 +18,13 @@
   7. Esibizione carte e assegnamento piatti
   8. Adeguamento parol
      
+* valore mani
+  Coppia [valore in relazione con mani diverse, valore in relazione a mano dello stesso tipo]
+  Coppia 1
+  Doppia coppia 2
+  Tris 3
+  Scala 4
+  Full 5
+  Colore 6
+  Poker 7
+  Scala reale 8
