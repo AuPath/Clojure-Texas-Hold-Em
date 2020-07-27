@@ -97,36 +97,64 @@
   [game amount]
   (update game :pot #(+ % amount)))
 
+(defn update-game-deck
+  "Return new gamestate with DECK."
+  [game deck]
+  (assoc game :deck deck))
+
 (defn update-game-player
-  "Returns new game state where previous GAME state has been updated with PLAYER."
-  [game player]
-  )
+  "Returns new game state where previous GAME state has been updated with PLAYER at PLAYER-ID."
+  [game player-id player]
+  (assoc-in game
+             [:players player-id]
+             player))
 
 (defn player-cards
   "Gives CARDS to PLAYER."
   [player cards]
   (assoc player :hand cards))
 
+(defn player
+  "Returns player with PLAYER-ID from GAME."
+  [game player-id]
+  (get (:players game) player-id))
 
 (defn player-money
   "Adds AMOUNT to PLAYER money."
   [player amount]
   (update player :money #(+ % amount)))
 
-(defn draw-n-cards-from-deck
-  ""
-  [game player-id n]
-  (let [deck (:deck game)
-        cards-drawn (take n deck)
-        new-game (assoc game :deck (clojure.set/difference (set deck)
-                                                           (set cards-drawn)))]
-    (update-player-cards new-game player-id cards-drawn)))
+(defn deck
+  "Returns GAME deck."
+  [game]
+  (:deck game))
+
+(defn deck-add-cards
+  "Adds CARDS to DECK."
+  [deck cards]
+  (vec (clojure.set/union (set deck)
+                         (set cards))))
+
+(defn deck-remove-cards
+  "Removes CARDS to DECK."
+  [deck cards]
+  (vec (clojure.set/difference (set deck)
+                              (set cards))))
+
+;; (defn draw-n-cards-from-deck
+;;   ""
+;;   [game player-id n]
+;;   (let [deck (:deck game)
+;;         cards-drawn (take n deck)
+;;         new-game (assoc game :deck (clojure.set/difference (set deck)
+;;                                                            (set cards-drawn)))]
+;;     (update-player-cards new-game player-id cards-drawn)))
 
 
 (def game-example {:deck (shuffle (deck-generate 4))
                          :pot 0
-                         :players {1 {:hand nil, :money 0}
-                                   2 {:hand nil, :money 100}}})
+                   :players {1 {:hand nil, :money 0}
+                             2 {:hand nil, :money 100}}})
 
 (defn cards-discarded
   "Returns discarded cards."
@@ -136,26 +164,41 @@
                            (set (apply merge (map :hand (vals (:players game))))))))
 
 (defn phase-blind
-  "Removes blind from all players."
+  "Removes BLIND amount of money from all players."
   [game blind]
-  (reduce #(update-player-money % %2 (- blind))
+  (reduce #(update-game-player %1
+                               %2
+                               (player-money (player %1 %2)
+                                             (- blind)))
           game
           (keys (:players game))))
 
-(defn phase-blind-2
-  ""
-  [game blind]
-  (reduce #(update-game-player %1 (player-money %2 blind))
-          game
-          (:players game)))
+(defn player-draw-n-cards-from-deck
+  "Drawn N cards from deck in GAME and give them to PLAYER, return new gamestate."
+  [game player-id n]
+  (let [deck (deck game)
+        drawn-cards (take n deck)
+        updated-deck (deck-remove-cards deck drawn-cards)
+        new-gamestate (update-game-deck game updated-deck)]
+    (update-game-player new-gamestate
+                        player-id
+                        (player-cards (player new-gamestate player-id)
+                                      drawn-cards))))
 
 (defn phase-card-distribution
-  "Gives 5 cards to all active players"
+  ""
   [game]
-  (let [active-players (:players game)]
-    (reduce #(draw-n-cards-from-deck % %2 5) 
-            game
-            (keys active-players))))
+  (reduce #(player-draw-n-cards-from-deck %1 %2 5)
+          game
+          (keys (:players game))))
+
+;; (defn phase-card-distribution
+;;   "Gives 5 cards to all active players"
+;;   [game]
+;;   (let [active-players (:players game)]
+;;     (reduce #(draw-n-cards-from-deck % %2 5) 
+;;             game
+;;             (keys active-players))))
 
 (defn value-carta-alta
   ""
