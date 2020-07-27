@@ -92,18 +92,24 @@
 ;;  :players '({:hand '(list of cards)
 ;;              :money number})}
 
-(defn update-pot
+(defn update-game-pot
   "Update pot by AMOUNT"
   [game amount]
   (update game :pot #(+ % amount)))
 
-(defn update-player-cards
+(defn update-game-player
+  "Returns new game state where previous GAME state has been updated with PLAYER."
+  [game player]
+  )
+
+(defn player-cards
   "Gives CARDS to PLAYER."
   [player cards]
   (assoc player :hand cards))
 
-(defn update-player-money
-  "Returns new game state where player has added amount to his money"
+
+(defn player-money
+  "Adds AMOUNT to PLAYER money."
   [player amount]
   (update player :money #(+ % amount)))
 
@@ -135,6 +141,13 @@
   (reduce #(update-player-money % %2 (- blind))
           game
           (keys (:players game))))
+
+(defn phase-blind-2
+  ""
+  [game blind]
+  (reduce #(update-game-player %1 (player-money %2 blind))
+          game
+          (:players game)))
 
 (defn phase-card-distribution
   "Gives 5 cards to all active players"
