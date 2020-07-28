@@ -192,13 +192,14 @@
           game
           (keys (:players game))))
 
-;; (defn phase-card-distribution
-;;   "Gives 5 cards to all active players"
-;;   [game]
-;;   (let [active-players (:players game)]
-;;     (reduce #(draw-n-cards-from-deck % %2 5) 
-;;             game
-;;             (keys active-players))))
+(defn update-game-bet
+  "Bet AMOUNT, take money from player with PLAYER-ID and add it to GAME pot. Returns new gamestate."
+  [game player-id amount]
+  (-> game
+      (update-game-player player-id
+                          (player-money (player game player-id)
+                                        (- amount)))
+      (update-game-pot amount)))
 
 (defn value-carta-alta
   ""
