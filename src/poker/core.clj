@@ -271,13 +271,24 @@
         (doppia-coppia? hand) (value-two-pair hand)
         (pair? hand) (value-pair hand)
         (carta-alta? hand) (value-carta-alta hand)))
-  
 
-(def esempio-carta-alta (list (card 14 \C)
-                              (card 13 \C)
-                              (card 12 \F)
-                              (card 10 \C)
-                              (card 9 \C)))
+(defn winning-hand
+  "Return winning hand."
+  [h1 h2 & hs]
+  (let [hands (concat (list h1 h2) hs)
+        values (map hand-value hands)]
+    (get (zipmap values hands) (apply max values))))
+
+(defn player-with-hand
+  "Returns player-id for player with hand."
+  [players hand]
+  (if (empty? players) nil
+      (let [p (first players)
+            k (first (keys p))
+            v (first (vals p))]
+        (if (= hand (:hand v))
+          k
+          (player-with-hand (rest players) hand)))))
 
 (def esempio-coppia (list (card 14 \C)
                           (card 14 \C)
