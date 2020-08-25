@@ -1,3 +1,4 @@
+
 (ns poker.core
   (:gen-class)
   (:require clojure.set))
@@ -35,49 +36,53 @@
    (some #{n}
          (vals (frequencies (map :value hand))))))
 
+(defn high-card?
+  [hand]
+  (not
+   ((some-fn pair? two-pair? three-of-a-kind?
+             poker? straight? royal-flush? full? straight-flush?) hand)))
+
 (defn pair?
   [hand]
   (group-of-n? 2 hand))
 
-(defn tris?
-  [hand]
-  (group-of-n? 3 hand))
-
-(defn poker?
-  [hand]
-  (group-of-n? 4 hand))
-
-(defn colore?
-  [hand]
-  (= 1 (count (group-by :suit hand))))
-
-(defn scala?
-  [hand]
-  (let [values (sort (map :value hand))]
-    (= values
-       (range (apply min values) (+ 1 (apply max values))))))
-
-(defn doppia-coppia?
+(defn two-pair?
   [hand]
   (= 2
      (count (filter #(= 2 %)
                     (vals (frequencies (map :value hand)))))))
 
-(defn scala-reale?
+(defn three-of-a-kind?
   [hand]
-  (and (scala? hand)
-       (colore? hand)))
+  (group-of-n? 3 hand))
+
+(defn straight?
+  [hand]
+  (let [values (sort (map :value hand))]
+    (= values
+       (range (apply min values) (+ 1 (apply max values))))))
+
+(defn flush?
+  [hand]
+  (= 1 (count (group-by :suit hand))))
 
 (defn full?
   [hand]
-  (and (tris? hand)
+  (and (three-of-a-kind? hand)
        (pair? hand)))
 
-(defn carta-alta?
+(defn poker?
   [hand]
-  (not
-   ((some-fn pair? doppia-coppia? tris?
-             poker? scala? scala-reale? full?) hand)))
+  (group-of-n? 4 hand))
+
+(defn straight-flush?
+  [hand]
+  (and (straight? hand)
+       (flush? hand)))
+
+(defn royal-flush?
+  [hand]
+  (straight-flush? hand))
 
 (defn deck-generate
   "Returns an initial unshuffled deck to play with NUMBER-PLAYERS."
@@ -142,7 +147,7 @@
 (defn player-generate
   ""
   ([hand money] {:hand hand, :money money})
-  ([] player-generate nil 0))
+  ([] (player-generate nil 0)))
 
 (defn game-generate
   "Generate a poker game for n players."
@@ -194,17 +199,17 @@
 (defn value-inter-hand-type
   ""
   [hand]
-  (cond (scala-reale? hand) 8000000
+  (cond (royal-flush? hand) 8000000
         (poker? hand) 7000000
-        (colore? hand) 6000000
+        (flush? hand) 6000000
         (full? hand) 5000000
-        (scala? hand) 4000000
-        (tris? hand) 3000000
-        (doppia-coppia? hand) 2000000
+        (straight? hand) 4000000
+        (three-of-a-kind? hand) 3000000
+        (two-pair? hand) 2000000
         (pair? hand) 1000000
         :else 0))
 
-(defn value-carta-alta
+(defn value-high-card
   ""
   [hand]
   (let [card-values (sort (map :value hand))
@@ -227,8 +232,8 @@
     (int (+ (reduce + (map * card-values weights))
             (value-inter-hand-type hand)))))
 
-(defn value-tris
-  "Returns numerical value of tris in HAND"
+(defn value-three-of-a-kind
+  "Returns numerical value of three-of-a-kind in HAND"
   [hand]
   (let [card-values (sort (map :value hand))]
     (int (+ (value-inter-hand-type hand)
@@ -237,40 +242,45 @@
 (defn value-full
   "Returns numerical value of full in HAND"
   [hand]
-  (value-tris hand))
+  (int (+ (value-inter-hand-type hand)
+          (nth (sort (map :value hand)) 2))))
 
 (defn value-poker
   "Returns numerical value of poker in HAND"
   [hand]
-  (value-tris hand))
+  (int (+ (value-inter-hand-type hand)
+          (nth (sort (map :value hand)) 2))))
 
-(defn value-colore
-  "Returns numerical value of colore in HAND"
+(defn value-flush
+  "Returns numerical value of flush in HAND"
   [hand]
   (int (+ (value-inter-hand-type hand)
-          (value-carta-alta hand))))
+          (value-high-card hand))))
 
-(defn value-scala-reale
+(defn value-royal-flush
   "Returns numerical value of poker in HAND"
   [hand]
-  1)
+  (int (+ (value-inter-hand-type hand)
+          (value-high-card hand))))
 
-(defn value-scala
+(defn value-straight
   ""
-  [])
+  [hand]
+  (int (+ (value-inter-hand-type hand)
+          (value-high-card hand))))
 
 (defn hand-value
   "Returns value of HAND."
   [hand]
-  (cond (scala-reale? hand) (value-scala-reale hand)
+  (cond (royal-flush? hand) (value-royal-flush hand)
         (poker? hand) (value-poker hand)
-        (colore? hand) (value-colore hand)
+        (flush? hand) (value-flush hand)
         (full? hand) (value-full hand)
-        (scala? hand) (value-scala hand)
-        (tris? hand) (value-tris hand)
-        (doppia-coppia? hand) (value-two-pair hand)
+        (straight? hand) (value-straight hand)
+        (three-of-a-kind? hand) (value-three-of-a-kind hand)
+        (two-pair? hand) (value-two-pair hand)
         (pair? hand) (value-pair hand)
-        (carta-alta? hand) (value-carta-alta hand)))
+        (high-card? hand) (value-high-card hand)))
 
 (defn winning-hand
   "Return winning hand."
@@ -296,13 +306,13 @@
                           (card 10 \C)
                           (card 9 \C)))
 
-(def esempio-doppia-coppia (list (card 14 \C)
+(def esempio-two-pair (list (card 14 \C)
                           (card 14 \C)
                           (card 12 \F)
                           (card 12 \C)
                           (card 9 \C)))
 
-(def esempio-tris (list (card 14 \C)
+(def esempio-three-of-a-kind (list (card 14 \C)
                         (card 14 \C)
                         (card 14 \F)
                         (card 10 \C)
@@ -320,19 +330,19 @@
                         (card 10 \C)
                         (card 10 \C)))
 
-(def esempio-scala (list (card 14 \C)
+(def esempio-straight (list (card 14 \C)
                          (card 13 \C)
                          (card 12 \F)
                          (card 11 \C)
                          (card 10 \C)))
 
-(def esempio-scala-reale (list (card 14 \C)
+(def esempio-royal-flush (list (card 14 \C)
                           (card 13 \C)
                           (card 12 \C)
                           (card 11 \C)
                           (card 10 \C)))
 
-(def esempio-colore (list (card 14 \C)
+(def esempio-flush (list (card 14 \C)
                           (card 9 \C)
                           (card 12 \C)
                           (card 11 \C)
