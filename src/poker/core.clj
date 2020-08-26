@@ -1,4 +1,3 @@
-
 (ns poker.core
   (:gen-class)
   (:require clojure.set))
@@ -22,25 +21,13 @@
 
 (defn card
   "Returns a card with VALUE, SUIT."
-  [value suit]
-  {:value value
-   :suit suit
-   :color (if (or (= \C suit)
-                  (= \Q suit))
-            \R
-            \N)})
+  [value suit] {:value value, :suit suit})
 
 (defn group-of-n?
   [n hand]
   (boolean
    (some #{n}
          (vals (frequencies (map :value hand))))))
-
-(defn high-card?
-  [hand]
-  (not
-   ((some-fn pair? two-pair? three-of-a-kind?
-             poker? straight? royal-flush? full? straight-flush?) hand)))
 
 (defn pair?
   [hand]
@@ -83,6 +70,12 @@
 (defn royal-flush?
   [hand]
   (straight-flush? hand))
+
+(defn high-card?
+  [hand]
+  (not
+   ((some-fn pair? two-pair? three-of-a-kind?
+             poker? straight? royal-flush? full? straight-flush?) hand)))
 
 (defn deck-generate
   "Returns an initial unshuffled deck to play with NUMBER-PLAYERS."
@@ -201,8 +194,8 @@
   [hand]
   (cond (royal-flush? hand) 8000000
         (poker? hand) 7000000
-        (flush? hand) 6000000
-        (full? hand) 5000000
+        (full? hand) 6000000
+        (flush? hand) 5000000
         (straight? hand) 4000000
         (three-of-a-kind? hand) 3000000
         (two-pair? hand) 2000000
@@ -300,53 +293,7 @@
           k
           (player-with-hand (rest players) hand)))))
 
-(def esempio-coppia (list (card 14 \C)
-                          (card 14 \C)
-                          (card 12 \F)
-                          (card 10 \C)
-                          (card 9 \C)))
 
-(def esempio-two-pair (list (card 14 \C)
-                          (card 14 \C)
-                          (card 12 \F)
-                          (card 12 \C)
-                          (card 9 \C)))
-
-(def esempio-three-of-a-kind (list (card 14 \C)
-                        (card 14 \C)
-                        (card 14 \F)
-                        (card 10 \C)
-                        (card 9 \C)))
-
-(def esempio-poker (list (card 14 \C)
-                         (card 14 \C)
-                         (card 14 \F)
-                         (card 14 \C)
-                         (card 9 \C)))
-
-(def esempio-full (list (card 14 \C)
-                        (card 14 \C)
-                        (card 14 \F)
-                        (card 10 \C)
-                        (card 10 \C)))
-
-(def esempio-straight (list (card 14 \C)
-                         (card 13 \C)
-                         (card 12 \F)
-                         (card 11 \C)
-                         (card 10 \C)))
-
-(def esempio-royal-flush (list (card 14 \C)
-                          (card 13 \C)
-                          (card 12 \C)
-                          (card 11 \C)
-                          (card 10 \C)))
-
-(def esempio-flush (list (card 14 \C)
-                          (card 9 \C)
-                          (card 12 \C)
-                          (card 11 \C)
-                          (card 10 \C)))
 
 
   
