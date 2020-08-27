@@ -145,11 +145,16 @@
 (defn game-generate
   "Generate a poker game for n players."
   [n]
-  {:deck (shuffle (deck-generate n))
+  {:round 1
+   :deck (shuffle (deck-generate n))
    :pot 0
    :players (zipmap (range 1 (+ 1 n))
-                    (repeat n (player-generate nil (money-starting-amount n))))
-   })
+                    (repeat n (player-generate nil (money-starting-amount n))))})
+
+(defn game-increase-round-counter
+  ""
+  [game]
+  (update game :round inc))
 
 (defn phase-blind
   "Removes BLIND amount of money from all players."
@@ -203,7 +208,7 @@
         :else 0))
 
 (defn value-high-card
-  ""
+  "Numerical value fo a high card hand."
   [hand]
   (let [card-values (sort (map :value hand))
         weights (map #(Math/pow 14 %) (range 0 5))]
@@ -257,7 +262,7 @@
           (value-high-card hand))))
 
 (defn value-straight
-  ""
+  "Numerical value of a straight hand."
   [hand]
   (int (+ (value-inter-hand-type hand)
           (value-high-card hand))))
