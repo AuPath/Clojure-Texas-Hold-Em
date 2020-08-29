@@ -173,6 +173,24 @@
   [game]
   (update game :round inc))
 
+(defn dealer?
+  "Return true if player-id is the dealer, false otherwise."
+  [game player-id]
+  (= player-id
+     (get (:turn-order game) 0)))
+
+(defn small-blind?
+  "Return true if player-id has big blind, false otherwise."
+  [game player-id]
+  (= player-id
+     (get (:turn-order game) 1)))
+
+(defn big-blind?
+  "Return true if player-id has big blind, false otherwise."
+  [game player-id]
+  (= player-id
+     (get (:turn-order game) 1)))
+
 (defn phase-blind
   "Removes BLIND amount of money from all players."
   [game blind]
