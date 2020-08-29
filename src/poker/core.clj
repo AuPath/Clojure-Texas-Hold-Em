@@ -162,6 +162,12 @@
    :players (zipmap (range 1 (+ 1 n))
                     (repeat n (player-generate nil (money-starting-amount n))))})
 
+(defn turn-order-advance
+  "Advances turn order."
+  [game]
+  (update-in game [:turn-order] #(conj (vec (rest %))
+                                       (first %))))
+
 (defn game-increase-round-counter
   ""
   [game]
