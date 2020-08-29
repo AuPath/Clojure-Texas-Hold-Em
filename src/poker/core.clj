@@ -84,12 +84,6 @@
                  value (range (card-lowest-value number-players) 15)]
              (card value suit))))
 
-;; {:deck '(list of cards)
-;;  :discarded-cards '(list of cards)
-;;  :pot number
-;;  :players '({:hand '(list of cards)
-;;              :money number})}
-
 (defn update-game-pot
   "Update pot by AMOUNT"
   [game amount]
@@ -127,11 +121,6 @@
   [game]
   (:deck game))
 
-(def game-example {:deck (shuffle (deck-generate 4))
-                         :pot 0
-                   :players {1 {:hand nil, :money 0}
-                             2 {:hand nil, :money 100}}})
-
 (defn money-starting-amount
   "Money for each player depending on n of players."
   [n]
@@ -142,12 +131,34 @@
   ([hand money] {:hand hand, :money money})
   ([] (player-generate nil 0)))
 
+(defn player-active?
+  "Return true if player is active in game, false otherwise."
+  [game player-id]
+  (boolean (some #{player-id} (:active-players game))))
+
+(defn player-set-inactive
+  "Adds player-id to active players"
+  [game player-id]
+  (-> game
+      (update-in [:active-players] #(disj % player-id))
+      (update-in [:inactive-players] #(conj % player-id))))
+
+(defn player-set-active
+  "Adds player-id to active players"
+  [game player-id]
+  (-> game
+      (update-in [:inactive-players] #(disj % player-id))
+      (update-in [:active-players] #(conj % player-id))))
+
 (defn game-generate
   "Generate a poker game for n players."
   [n]
   {:round 1
    :deck (shuffle (deck-generate n))
    :pot 0
+   :turn-order [1 2 3 4]
+   :active-players #{1 2 3 4}
+   :inactive-players #{}
    :players (zipmap (range 1 (+ 1 n))
                     (repeat n (player-generate nil (money-starting-amount n))))})
 
