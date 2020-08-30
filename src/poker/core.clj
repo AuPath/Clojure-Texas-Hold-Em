@@ -7,13 +7,12 @@
   [& args]
   (println "Hello, World!"))
 
-;;; Numero massimo di giocatori è 6
-;;; Come quando fuori piove, cuori quadri fiori picche
 ;;; A,K,Q,J,10,9,8,7,6,5
-;;; 14,13,12,11,10,9,8,7,6,5
+;;; 14,13,12,11,10,9,8,7,6,5,4,3,2
 ;;; C,Q,F,P
 ;;; R,B
 
+;; Per poker all'italiana
 (defn card-lowest-value
   "Returns value of the card that has the lowest value."
   [number-players]
@@ -78,10 +77,10 @@
              poker? straight? royal-flush? full? straight-flush?) hand)))
 
 (defn deck-generate
-  "Returns an initial unshuffled deck to play with NUMBER-PLAYERS."
-  [number-players]
+  "Returns an initial unshuffled deck."
+  []
   (into [] (for [suit '(\C \Q \F \P)
-                 value (range (card-lowest-value number-players) 15)]
+                 value (range 2 15)]
              (card value suit))))
 
 (defn update-game-pot
@@ -189,7 +188,7 @@
   "Return true if player-id has big blind, false otherwise."
   [game player-id]
   (= player-id
-     (get (:turn-order game) 1)))
+     (get (:turn-order game) 2)))
 
 (defn phase-blind
   "Removes BLIND amount of money from all players."
