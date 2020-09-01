@@ -6,5 +6,7 @@
    The dealer is the last person to receive the cards.
    The small blind the first.
 ** TODO fix turn order function
+** DONE Add method that accepts a cards as a string and then converts to the map representation.
+   10 can be represented as "T".
 
    

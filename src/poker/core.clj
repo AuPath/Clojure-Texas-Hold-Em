@@ -7,9 +7,9 @@
   [& args]
   (println "Hello, World!"))
 
-;;; A,K,Q,J,10,9,8,7,6,5
+;;; A,K,Q,J,T,9,8,7,6,5
 ;;; 14,13,12,11,10,9,8,7,6,5,4,3,2
-;;; C,Q,F,P
+;;; C clubs, D diamonds, H hearts, S spades
 ;;; R,B
 
 ;; Per poker all'italiana
@@ -20,7 +20,17 @@
 
 (defn card
   "Returns a card with VALUE, SUIT."
-  [value suit] {:value value, :suit suit})
+  ([value suit] {:value value, :suit suit})
+  ([vs] (let [[v s] vs
+              x (str v)
+              y (case x
+                  "A" 14
+                  "K" 13
+                  "Q" 12
+                  "J" 11
+                  "T" 10
+                  :else (Integer/parseInt x))]
+          (card y s))))
 
 (defn group-of-n?
   [n hand]
@@ -79,7 +89,7 @@
 (defn deck-generate
   "Returns an initial unshuffled deck."
   []
-  (into [] (for [suit '(\C \Q \F \P)
+  (into [] (for [suit '(\C \D \S \H)
                  value (range 2 15)]
              (card value suit))))
 
