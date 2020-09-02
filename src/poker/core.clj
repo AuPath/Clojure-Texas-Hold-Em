@@ -32,13 +32,7 @@
                   (Integer/parseInt x))]
           (card y s))))
 
-(defn best-hand
-  "Return best hand possible out of list of cards."
-  [cards]
-  (let [hands (combo/combinations cards 5)
-        vals (map hand-value hands)
-        m (zipmap vals hands)]
-    (apply max-key key m)))
+
 
 (defn group-of-n?
   [n hand]
@@ -344,6 +338,14 @@
         (two-pair? hand) "Two pair"
         (pair? hand) "Pair"
         (high-card? hand) "High card"))
+
+(defn best-hand
+  "Return best hand possible out of list of cards."
+  [cards]
+  (let [hands (combo/combinations cards 5)
+        vals (map hand-value hands)
+        m (zipmap vals hands)]
+    (apply max-key key m)))
 
 (defn winning-hand
   "Return winning hand."
