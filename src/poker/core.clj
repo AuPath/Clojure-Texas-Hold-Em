@@ -32,8 +32,6 @@
                   (Integer/parseInt x))]
           (card y s))))
 
-
-
 (defn group-of-n?
   [n hand]
   (boolean
@@ -165,13 +163,15 @@
   "Generate a poker game for n players."
   [n]
   {:round 1
-   :deck (shuffle (deck-generate n))
+   :deck (shuffle (deck-generate))
    :pot 0
-   :turn-order [1 2 3 4]
-   :active-players #{1 2 3 4}
+   :turn-order (into [] (range 1 (inc n)))
+   :active-players (into #{} (range 1 (inc n)))
    :inactive-players #{}
    :players (zipmap (range 1 (+ 1 n))
                     (repeat n (player-generate nil (money-starting-amount n))))})
+
+;; turn order is small-blind, big blind, ... , dealer
 
 (defn turn-order-advance
   "Advances turn order."
@@ -187,20 +187,21 @@
 (defn dealer?
   "Return true if player-id is the dealer, false otherwise."
   [game player-id]
-  (= player-id
-     (get (:turn-order game) 0)))
+  (let [turn-order-vec (:turn-order game)]
+    (= player-id
+       (get turn-order-vec (dec (count turn-order-vec))))))
 
 (defn small-blind?
   "Return true if player-id has big blind, false otherwise."
   [game player-id]
   (= player-id
-     (get (:turn-order game) 1)))
+     (get (:turn-order game) 0)))
 
 (defn big-blind?
   "Return true if player-id has big blind, false otherwise."
   [game player-id]
   (= player-id
-     (get (:turn-order game) 2)))
+     (get (:turn-order game) 1)))
 
 (defn phase-blind
   "Removes BLIND amount of money from all players."
@@ -364,8 +365,3 @@
         (if (= hand (:hand v))
           k
           (player-with-hand (rest players) hand)))))
-
-
-
-
-  
