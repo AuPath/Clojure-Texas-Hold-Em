@@ -1,6 +1,6 @@
 (ns poker.core
   (:gen-class)
-  (:require clojure.set))
+  (:require [clojure.math.combinatorics :as combo]))
 
 (defn -main
   "I don't do a whole lot ... yet."
@@ -29,8 +29,16 @@
                   "Q" 12
                   "J" 11
                   "T" 10
-                  :else (Integer/parseInt x))]
+                  (Integer/parseInt x))]
           (card y s))))
+
+(defn best-hand
+  "Return best hand possible out of list of cards."
+  [cards]
+  (let [hands (combo/combinations cards 5)
+        vals (map hand-value hands)
+        m (zipmap vals hands)]
+    (apply max-key key m)))
 
 (defn group-of-n?
   [n hand]
@@ -323,6 +331,19 @@
         (two-pair? hand) (value-two-pair hand)
         (pair? hand) (value-pair hand)
         (high-card? hand) (value-high-card hand)))
+
+(defn hand-name
+  "Returns name of HAND as string."
+  [hand]
+  (cond (royal-flush? hand) "Royal flush"
+        (poker? hand) "Poker"
+        (flush? hand) "Flush"
+        (full? hand) "Full"
+        (straight? hand) "Straight"
+        (three-of-a-kind? hand) "Three of a kind"
+        (two-pair? hand) "Two pair"
+        (pair? hand) "Pair"
+        (high-card? hand) "High card"))
 
 (defn winning-hand
   "Return winning hand."
