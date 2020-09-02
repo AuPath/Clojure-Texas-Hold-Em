@@ -1,6 +1,7 @@
 * Todo list
 ** TODO implement high/low aces.
-** TODO test if hand predicates work with 7 cards (2 in hand and 5 on table)
+** DONE test if hand predicates work with 7 cards (2 in hand and 5 on table)
+   CLOSED: [2020-09-02 Wed 15:33]
 ** TODO implement initial minigame to decide turn order
 ** TODO fix dealer and small/big blind predicates
    The dealer is the last person to receive the cards.
