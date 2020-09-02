@@ -212,7 +212,7 @@
           game
           (keys (:players game))))
 
-(defn player-draw-n-cards-from-deck
+(defn player-draw-n-cards
   "Drawn N cards from deck in GAME and give them to PLAYER, return new gamestate."
   [game player-id n]
   (let [deck (deck game)
@@ -227,7 +227,7 @@
 (defn phase-card-distribution
   "Gives 5 cards from deck to all player in GAME."
   [game]
-  (reduce #(player-draw-n-cards-from-deck %1 %2 5)
+  (reduce #(player-draw-n-cards %1 %2 5)
           game
           (keys (:players game))))
 
