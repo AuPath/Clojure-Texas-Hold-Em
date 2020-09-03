@@ -120,7 +120,7 @@
 (defn player-cards
   "Gives CARDS to PLAYER."
   [player cards]
-  (assoc player :hand cards))
+  (update player :hand #(concat % cards)))
 
 (defn player
   "Returns player with PLAYER-ID from GAME."
@@ -181,13 +181,13 @@
 ;; turn order is small-blind, big blind, ... , dealer
 
 (defn turn-order-advance
-  "Advances turn order."
+  "Advances turn order for game."
   [game]
   (update-in game [:turn-order] #(conj (drop-last %)
                                        (last %))))
 
 (defn game-increase-round-counter
-  ""
+  "Increase game round counter by one."
   [game]
   (update game :round inc))
 
@@ -225,23 +225,17 @@
   [game player-id n]
   (let [deck (deck game)
         drawn-cards (take n deck)
-        updated-deck (drop n deck)
-        new-gamestate (update-game-deck game updated-deck)]
+        updated-deck (drop n deck)]
     (-> game
         (update-game-deck updated-deck)
-        (update-game-player player-id (player-cards)))
-    
-    (update-game-player new-gamestate
-                        player-id
-                        (player-cards (player new-gamestate player-id)
-                                      drawn-cards))))
+        (update-game-player-cards player-id drawn-cards))))
 
 (defn phase-card-distribution
-  "Gives 5 cards from deck to all player in GAME."
-  [game]
-  (reduce #(player-draw-n-cards %1 %2 5)
+  "Gives n cards from deck to all player in GAME."
+  [game n]
+  (reduce #(player-draw-n-cards %1 %2 n)
           game
-          (keys (:players game))))
+          (:turn-order game)))
 
 (defn update-game-bet
   "Bet AMOUNT, take money from player with PLAYER-ID and add it to GAME pot. Returns new gamestate."
