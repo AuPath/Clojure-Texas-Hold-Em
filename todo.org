@@ -12,3 +12,4 @@
    10 can be represented as "T".
 ** TODO Redo card distribution.
    Instead of givin n cards to player give one each until n are reached.
+ 

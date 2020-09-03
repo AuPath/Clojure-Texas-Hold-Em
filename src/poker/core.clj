@@ -103,12 +103,19 @@
   [game deck]
   (assoc game :deck deck))
 
-(defn update-game-player
-  "Returns new game state where previous GAME state has been updated with PLAYER at PLAYER-ID."
-  [game player-id player]
-  (assoc-in game
-             [:players player-id]
-             player))
+(defn update-game-player-cards
+  "Give cards to player-id in game."
+  [game player-id cards]
+  (update-in game
+            [:players player-id]
+            #(player-cards % cards)))
+
+(defn update-game-player-money
+  "Add n money to player-id in game."
+  [game player-id n]
+  (update-in game
+            [:players player-id]
+            #(player-money % n)))
 
 (defn player-cards
   "Gives CARDS to PLAYER."
@@ -165,7 +172,7 @@
   {:round 1
    :deck (shuffle (deck-generate))
    :pot 0
-   :turn-order (into [] (range 1 (inc n)))
+   :turn-order (range 1 (inc n))
    :active-players (into #{} (range 1 (inc n)))
    :inactive-players #{}
    :players (zipmap (range 1 (+ 1 n))
@@ -176,8 +183,8 @@
 (defn turn-order-advance
   "Advances turn order."
   [game]
-  (update-in game [:turn-order] #(conj (vec (rest %))
-                                       (first %))))
+  (update-in game [:turn-order] #(conj (drop-last %)
+                                       (last %))))
 
 (defn game-increase-round-counter
   ""
@@ -220,6 +227,10 @@
         drawn-cards (take n deck)
         updated-deck (drop n deck)
         new-gamestate (update-game-deck game updated-deck)]
+    (-> game
+        (update-game-deck updated-deck)
+        (update-game-player player-id (player-cards)))
+    
     (update-game-player new-gamestate
                         player-id
                         (player-cards (player new-gamestate player-id)
