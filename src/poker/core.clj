@@ -103,20 +103,6 @@
   [game deck]
   (assoc game :deck deck))
 
-(defn update-game-player-cards
-  "Give cards to player-id in game."
-  [game player-id cards]
-  (update-in game
-            [:players player-id]
-            #(player-cards % cards)))
-
-(defn update-game-player-money
-  "Add n money to player-id in game."
-  [game player-id n]
-  (update-in game
-            [:players player-id]
-            #(player-money % n)))
-
 (defn player-cards
   "Gives CARDS to PLAYER."
   [player cards]
@@ -131,6 +117,20 @@
   "Adds AMOUNT to PLAYER money."
   [player amount]
   (update player :money #(+ % amount)))
+
+(defn update-game-player-cards
+  "Give cards to player-id in game."
+  [game player-id cards]
+  (update-in game
+            [:players player-id]
+            #(player-cards % cards)))
+
+(defn update-game-player-money
+  "Add n money to player-id in game."
+  [game player-id n]
+  (update-in game
+            [:players player-id]
+            #(player-money % n)))
 
 (defn deck
   "Returns GAME deck."
@@ -165,6 +165,12 @@
   (-> game
       (update-in [:inactive-players] #(disj % player-id))
       (update-in [:active-players] #(conj % player-id))))
+
+(defn hands-active
+  "Return active hands."
+  [game]
+  (map :hand (vals (select-keys (:players game)
+                               (:active-players game)))))
 
 (defn game-generate
   "Generate a poker game for n players."
@@ -210,16 +216,6 @@
   (= player-id
      (get (:turn-order game) 1)))
 
-(defn phase-blind
-  "Removes BLIND amount of money from all players."
-  [game blind]
-  (reduce #(update-game-player %1
-                               %2
-                               (player-money (player %1 %2)
-                                             (- blind)))
-          game
-          (keys (:players game))))
-
 (defn player-draw-n-cards
   "Drawn N cards from deck in GAME and give them to PLAYER, return new gamestate."
   [game player-id n]
@@ -236,15 +232,6 @@
   (reduce #(player-draw-n-cards %1 %2 n)
           game
           (:turn-order game)))
-
-(defn update-game-bet
-  "Bet AMOUNT, take money from player with PLAYER-ID and add it to GAME pot. Returns new gamestate."
-  [game player-id amount]
-  (-> game
-      (update-game-player player-id
-                          (player-money (player game player-id)
-                                        (- amount)))
-      (update-game-pot amount)))
 
 (defn value-inter-hand-type
   ""
@@ -345,7 +332,7 @@
         (pair? hand) "Pair"
         (high-card? hand) "High card"))
 
-(defn best-hand
+(defn best-possible-hand
   "Return best hand possible out of list of cards."
   [cards]
   (let [hands (combo/combinations cards 5)

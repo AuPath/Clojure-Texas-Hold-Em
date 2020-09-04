@@ -1,3 +1,4 @@
+
 * Todo list
 ** TODO implement high/low aces.
 ** DONE test if hand predicates work with 7 cards (2 in hand and 5 on table)
@@ -7,9 +8,11 @@
    CLOSED: [2020-09-02 Wed 16:27]
    The dealer is the last person to receive the cards.
    The small blind the first.
-** TODO fix turn order function
+** DONE fix turn order function
+   CLOSED: [2020-09-03 Thu 20:05]
 ** DONE Add method that accepts a cards as a string and then converts to the map representation.
    10 can be represented as "T".
-** TODO Redo card distribution.
+** DONE Redo card distribution.
+   CLOSED: [2020-09-04 Fri 12:02]
    Instead of givin n cards to player give one each until n are reached.
  

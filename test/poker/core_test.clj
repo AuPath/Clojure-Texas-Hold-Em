@@ -75,6 +75,18 @@
     (is (straight-flush? hand-straight-flush) "Straight-Flush detection fails.")    
     (is (royal-flush? hand-royal-flush) "Royal-Flush detection fails.")))
 
+(deftest hand-type-name-test
+  (testing "Testing hand-type function that returns hand name"
+    (is (= (hand-name hand-high-card) "High card"))
+    (is (= (hand-name hand-pair) "Pair"))
+    (is (= (hand-name hand-two-pair) "Two pair"))
+    (is (= (hand-name hand-three-of-a-kind) "Three of a kind"))
+    (is (= (hand-name hand-straight) "Straight"))
+    (is (= (hand-name hand-full) "Full"))
+    (is (= (hand-name hand-flush) "Flush"))
+    (is (= (hand-name hand-poker) "Poker"))
+    (is (= (hand-name hand-royal-flush) "Royal flush"))))
+
 (deftest inter-hand-ranking-test
   (testing "Testing ranking order between different hand types."
     (is (apply < (map hand-value (list hand-high-card
