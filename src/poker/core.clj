@@ -12,12 +12,6 @@
 ;;; C clubs, D diamonds, H hearts, S spades
 ;;; R,B
 
-;; Per poker all'italiana
-(defn card-lowest-value
-  "Returns value of the card that has the lowest value."
-  [number-players]
-  (- 11 number-players))
-
 (defn card
   "Returns a card with VALUE, SUIT."
   ([value suit] {:value value, :suit suit})
