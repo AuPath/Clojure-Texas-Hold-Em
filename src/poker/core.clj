@@ -80,13 +80,6 @@
    ((some-fn pair? two-pair? three-of-a-kind?
              poker? straight? royal-flush? full? straight-flush?) hand)))
 
-(defn deck-generate
-  "Returns an initial unshuffled deck."
-  []
-  (into [] (for [suit '(\C \D \S \H)
-                 value (range 2 15)]
-             (card value suit))))
-
 (defn update-game-pot
   "Update pot by AMOUNT"
   [game amount]
@@ -127,9 +120,11 @@
             #(player-money % n)))
 
 (defn deck
-  "Returns GAME deck."
-  [game]
-  (:deck game))
+  "Generates unshuffled deck or returns deck for game."
+  ([] (into [] (for [suit '(\C \D \S \H)
+                     value (range 2 15)]
+                 (card value suit))))
+  ([game] (:deck game)))
 
 (defn money-starting-amount
   "Money for each player depending on n of players."
@@ -170,7 +165,7 @@
   "Generate a poker game for n players."
   [n]
   {:round 1
-   :deck (shuffle (deck-generate))
+   :deck (shuffle (deck))
    :pot 0
    :turn-order (range 1 (inc n))
    :active-players (into #{} (range 1 (inc n)))
@@ -228,7 +223,7 @@
           (:turn-order game)))
 
 (defn value-inter-hand-type
-  ""
+  "Values of hand types."
   [hand]
   (cond (royal-flush? hand) 8000000
         (poker? hand) 7000000
