@@ -159,7 +159,13 @@
   "Return active hands."
   [game]
   (map :hand (vals (select-keys (:players game)
-                               (:active-players game)))))
+                                (:active-players game)))))
+
+(defn turn-order-active
+  "Return turn order with only active players."
+  [game]
+  (filter (set (:active-players game))
+          (:turn-order game)))
 
 (defn game-generate
   "Generate a poker game for n players."
@@ -205,22 +211,27 @@
   (= player-id
      (get (:turn-order game) 1)))
 
-(defn player-draw-n-cards
-  "Drawn N cards from deck in GAME and give them to PLAYER, return new gamestate."
-  [game player-id n]
+(defn player-draw
+  "Drawn one card from deck in GAME and give them to PLAYER, return new gamestate.."
+  [game player-id]
   (let [deck (deck game)
-        drawn-cards (take n deck)
-        updated-deck (drop n deck)]
+        drawn-cards (take 1 deck)
+        updated-deck (drop 1 deck)]
     (-> game
         (update-game-deck updated-deck)
         (update-game-player-cards player-id drawn-cards))))
 
+(def game-example (game-generate 3))
+
 (defn phase-card-distribution
-  "Gives n cards from deck to all player in GAME."
+  "Gives n cards from deck to all players in GAME."
   [game n]
-  (reduce #(player-draw-n-cards %1 %2 n)
-          game
-          (:turn-order game)))
+  (nth (iterate (fn [x]
+                  (reduce #(player-draw %1 %2)
+                          x
+                          (turn-order-active game)))
+                game)
+       n))
 
 (defn value-inter-hand-type
   "Values of hand types."
